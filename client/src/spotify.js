@@ -28,7 +28,8 @@ export const logout = () => {
   };
 
 
-// Checks if the amount of time that has elapsed between the timestamp in localStorage
+
+  // Checks if the amount of time that has elapsed between the timestamp in localStorage
 
 
   const hasTokenExpired = () => {
@@ -45,7 +46,8 @@ export const logout = () => {
     return (millisecondsElapsed / 1000) > Number(expireTime);
   };
 
-// Use the refresh token in localStorage to hit the /refresh_token endpoint in our Node app, then update values in localStorage with data from response.
+
+  // Use the refresh token in localStorage to hit the /refresh_token endpoint in our Node app, then update values in localStorage with data from response.
 
 const refreshToken = async () => {
     try {
@@ -74,7 +76,7 @@ const refreshToken = async () => {
   };
 
 
-//created the function below in order to grab the access token to use for our App.js file
+  //created the function below in order to grab the access token to use for our App.js file
 //update this to store tokens in local storage first time user logs in and opulls it next time theyre available
 const getAccessToken = () => {
     const queryString = window.location.search;
