@@ -3,7 +3,7 @@ const express = require('express');
 const querystring = require('querystring');
 const app = express();
 const axios = require('axios');
-const port = 3000;
+const port = 8888;
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -47,56 +47,45 @@ const generateRandomString = length => {
 
 
   app.get('/callback', (req, res) => {
-    //we store code variable (auth code) in the query params
     const code = req.query.code || null;
-
-    //post call
+  
     axios({
-        method: 'post',
-        url: 'https://accounts.spotify.com/api/token',
-        //req body params and what they need
-        data: querystring.stringify({
-          grant_type: 'authorization_code',
-          code: code,
-          redirect_uri: REDIRECT_URI
-        }),
-        //2 headers, the content type and authorization, required
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${new Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`,
-        },
-      })
-      //since axios is promise based, we use then and catch callback to handle what is returned
+      method: 'post',
+      url: 'https://accounts.spotify.com/api/token',
+      data: querystring.stringify({
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: REDIRECT_URI
+      }),
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${new Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`,
+      },
+    })
       .then(response => {
-        //if its sueccesfull then we will refactor the code below to send a get req to me endpoint (/v1/me) which will return detailts profile of current user
         if (response.status === 200) {
+          const { access_token, refresh_token, expires_in } = response.data;
+  
+          const queryParams = querystring.stringify({
+            access_token,
+            refresh_token,
+            expires_in
+          });
 
-            //destructure access toke and token type to pass into auth header
-          const { access_token, token_type } = response.data;
-    
-          axios.get('https://api.spotify.com/v1/me', {
-            headers: {
-              Authorization: `${token_type} ${access_token}`
-            }
-          })
+          //redirect to react app
+          res.redirect(`http://localhost:3000/?${queryParams}`);
 
-          //return stringified response data from axios response. axios stores data it gets back in requests in data property of resposne obejct (not on resp obj itself)
-            //below just makes it look nice in the browser  (the json data)
-            .then(response => {
-              res.send(`<pre>${JSON.stringify(response.data, null, 2)}</pre>`);
-            })
-            .catch(error => {
-              res.send(error);
-            });
-    
+          
+
         } else {
-          res.send(response);
+          //send an error, redirect to error query
+          res.redirect(`/?${querystring.stringify({ error: 'invalid_token' })}`);
         }
       })
       .catch(error => {
         res.send(error);
       });
-  })
+  });
 
 
   app.get('/refresh_token', (req, res) => {
@@ -104,7 +93,7 @@ const generateRandomString = length => {
     const { refresh_token } = req.query;
   
     // well set up a get route to reequest the refresh token
-    axios.get(`http://localhost:3000/refresh_token?refresh_token=${refresh_token}`)
+    axios.get(`http://localhost:8888/refresh_token?refresh_token=${refresh_token}`)
     .then(response => {
       res.send(`<pre>${JSON.stringify(response.data, null, 2)}</pre>`);
     })
