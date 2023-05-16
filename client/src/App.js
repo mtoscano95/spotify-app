@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom';
 import styled from 'styled-components';
 import { GlobalStyle } from './styles';
-import { Login, Profile } from './pages';
+import { Login, Profile, TopArtists, TopTracks, Playlists } from './pages';
 
 const StyledLogoutButton = styled.button`
   position: absolute;
@@ -50,9 +50,12 @@ const App = () => {
 
     //make a function to fetch user profile data and set the setProfile as that profile data
     const fetchData = async() => {
+      if(accessToken){
         const {data} = await getCurrentUserProfile();
         setProfile(data);
+      }
     }
+  
 
     //always call fetchData
     // we will wrap fetch data into our HOF of catchErrors which will handle async/await errors
@@ -76,10 +79,10 @@ const App = () => {
       <Router>
         <ScrollToTop/>
         <Routes>
-          <Route path="/top-artists"/>
-          <Route path="/top-tracks"/>
+          <Route path="/top-artists" element={<TopArtists/>}/>
+          <Route path="/top-tracks" element={<TopTracks/>}/>
           <Route path="/playlists/:id"/>
-          <Route path="/playlists"/>
+          <Route path="/playlists" element={<Playlists/>}/>
           <Route path="/" element={<Profile/>}/>
         </Routes>
       </Router>

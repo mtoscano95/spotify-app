@@ -23,8 +23,8 @@ export const logout = () => {
     for (const property in LOCALSTORAGE_KEYS) {
       window.localStorage.removeItem(LOCALSTORAGE_KEYS[property]);
     }
-    // Navigate to homepage
-    window.location = window.location.origin;
+    // Navigate to login page
+    window.location = "http:/localhost:3000/login"
   };
 
 
@@ -128,9 +128,10 @@ axios.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 //spotity default
 axios.defaults.headers['Content-Type'] = 'application/json';
 
-
 //since we set baseUrl globally, we dont need to spell out the link. we can export a function to grab the user profile 
 // now this goes to the App.js file
+
+
 export const getCurrentUserProfile = () =>  axios.get('/me');
 
 // We will add get current user olaylist function that hits /me /playlsit spotify API endpoint
@@ -149,5 +150,6 @@ export const getCurrentUserPlaylists = (limit = 5) => {
   export const getTopTracks = (time_range = 'short_term') => {
     return axios.get(`/me/top/tracks?time_range=${time_range}`);
   };
+
 
 
