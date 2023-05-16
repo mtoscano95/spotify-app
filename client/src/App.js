@@ -129,9 +129,3 @@ localstorage will have access token, refresh toke, access token expiore time and
 
 */
 
-
-/* How to make the homepage have the 
-
-
-
-*/

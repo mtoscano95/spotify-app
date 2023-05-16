@@ -132,3 +132,22 @@ axios.defaults.headers['Content-Type'] = 'application/json';
 //since we set baseUrl globally, we dont need to spell out the link. we can export a function to grab the user profile 
 // now this goes to the App.js file
 export const getCurrentUserProfile = () =>  axios.get('/me');
+
+// We will add get current user olaylist function that hits /me /playlsit spotify API endpoint
+//https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-a-list-of-current-users-playlists
+
+export const getCurrentUserPlaylists = (limit = 5) => {
+    return axios.get(`/me/playlists?limit=${limit}`);
+  };
+
+// We will add a get top artists function, pass in short term time range (4 weeks)
+//https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
+  export const getTopArtists = (time_range = 'short_term') => {
+    return axios.get(`/me/top/artists?time_range=${time_range}`);
+  };
+
+  export const getTopTracks = (time_range = 'short_term') => {
+    return axios.get(`/me/top/tracks?time_range=${time_range}`);
+  };
+
+
