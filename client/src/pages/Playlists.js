@@ -1,61 +1,62 @@
-import {useState, useEffect} from 'react';
-import { catchErrors } from '../utils';
-import { getCurrentUserPlaylists } from '../spotify';
-import { SectionWrapper, PlaylistsGrid } from '../Components';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getCurrentUserPlaylists } from '../spotify';
+import { catchErrors } from '../utils';
+import { SectionWrapper, PlaylistsGrid, Loader } from '../Components';
 
 const Playlists = () => {
-    const [playlistData, setPlaylistsData] = useState(null);
-    const [playlists, setPlaylists] = useState([]);
+  const [playlistsData, setPlaylistsData] = useState(null);
+  const [playlists, setPlaylists] = useState(null);
 
-    //the playlist data (obj returned) from spotify endpoint 
-    useEffect(() => {
-        const fetchData = async () => {
-          const userPlaylists = await getCurrentUserPlaylists();
-          setPlaylistsData(userPlaylists.data);
-        }
-        catchErrors(fetchData());});
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await getCurrentUserPlaylists();
+      setPlaylistsData(data);
+    };
 
-//when playlistsData updates, check if there qre more playlists to fetch
-// then update the state variable
-        useEffect(()=>{
-        
-        if(!playlistData){
-            return ;
-        }
+    catchErrors(fetchData());
+  }, []);
 
-        //playlist endpoint returns 20 playlists at a time
-        // make sure we get all playlsist by fetchint the next set
+  // When playlistsData updates, check if there are more playlists to fetch
+  // then update the state variable
+  useEffect(() => {
+    if (!playlistsData) {
+      return;
+    }
 
-        const fetchMoreData = async() => {
-            if(playlistData.next){
-                const {data} = await axios.get(playlistData.next)
-                setPlaylistsData(data);
-            }
-        };
+    // Playlist endpoint only returns 20 playlists at a time, so we need to
+    // make sure we get ALL playlists by fetching the next set of playlists
+    const fetchMoreData = async () => {
+      if (playlistsData.next) {
+        const { data } = await axios.get(playlistsData.next);
+        setPlaylistsData(data);
+      }
+    };
 
-        //use functional update to udpate playlsts state variable and not make an infinite loop
-        //
+    // Use functional update to update playlists state variable
+    // to avoid including playlists as a dependency for this hook
+    // and creating an infinite loop
+    setPlaylists(playlists => ([
+      ...playlists ? playlists : [],
+      ...playlistsData.items
+    ]));
 
-        setPlaylists(playlists => ( [
-            ...playlists ? playlists: [],
-            ...playlistData.items
-        ]))
+    // Fetch next set of playlists as needed
+    catchErrors(fetchMoreData());
 
-        catchErrors(fetchMoreData());
+  }, [playlistsData]);
 
-
-    },[playlistData])
-
-    return(
+  return (
     <main>
-    <SectionWrapper title="Playlists" breadcrumbs={true}>
-        {playlists && (
-        <PlaylistsGrid playlists={playlists} />
+      <SectionWrapper title="Public Playlists" breadcrumb={true}>
+        {playlists ? (
+          <PlaylistsGrid playlists={playlists} />
+        ):(
+          <Loader/>
         )}
-    </SectionWrapper>
+      </SectionWrapper>
     </main>
-    )
-}
+  );
+};
 
-export default Playlists
+export default Playlists;

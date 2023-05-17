@@ -34,6 +34,7 @@ export const logout = () => {
 
   const hasTokenExpired = () => {
     const { accessToken, timestamp, expireTime } = LOCALSTORAGE_VALUES;
+
     if (!accessToken || !timestamp) {
       return false;
     }
@@ -131,15 +132,14 @@ axios.defaults.headers['Content-Type'] = 'application/json';
 //since we set baseUrl globally, we dont need to spell out the link. we can export a function to grab the user profile 
 // now this goes to the App.js file
 
-
 export const getCurrentUserProfile = () =>  axios.get('/me');
 
-// We will add get current user olaylist function that hits /me /playlsit spotify API endpoint
+// We will add get current user playlist function that hits /me /playlsit spotify API endpoint
 //https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-a-list-of-current-users-playlists
 
-export const getCurrentUserPlaylists = (limit = 5) => {
-    return axios.get(`/me/playlists?limit=${limit}`);
-  };
+export const getCurrentUserPlaylists = (limit = 20) => {
+  return axios.get(`/me/playlists?limit=${limit}`);
+};
 
 // We will add a get top artists function, pass in short term time range (4 weeks)
 //https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
@@ -151,5 +151,19 @@ export const getCurrentUserPlaylists = (limit = 5) => {
     return axios.get(`/me/top/tracks?time_range=${time_range}`);
   };
 
+//Get a Playlist
+//https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-playlist
+// playlist_id - The Spotify ID for the playlist.
+
+export const getPlaylistById = playlist_id => {
+  return axios.get(`/playlists/${playlist_id}`);
+}
 
 
+//Get Audio Features for Several Tracks
+//https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-several-audio-features
+// {string} ids - A comma-separated list of the Spotify IDs for the tracks
+
+export const getAudioFeaturesForTracks = ids => {
+  return axios.get(`/audio-features?ids=${ids}`);
+};

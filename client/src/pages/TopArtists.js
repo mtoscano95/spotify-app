@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { catchErrors } from '../utils';
 import { getTopArtists } from '../spotify';
-
-import { SectionWrapper, ArtistsGrid, TimeRangeButtons } from '../Components';
+import { SectionWrapper, ArtistsGrid, TimeRangeButtons, Loader } from '../Components';
 
 const TopArtists = () => {
   const [topArtists, setTopArtists] = useState(null);
@@ -26,11 +25,13 @@ const TopArtists = () => {
   //added classname of "active" conditionally if the activeRange is short med or long
   return (
     <main>
-    {topArtists && (
+    {topArtists ? (
           <SectionWrapper title="Top artists" breadcrumb={true}>
             <TimeRangeButtons activeRange={activeRange} setActiveRange={setActiveRange}/>
-            <ArtistsGrid artists={topArtists.items.slice(0, 10)} />
+            <ArtistsGrid artists={topArtists.items} />
           </SectionWrapper>
+      ):(
+        <Loader/>
       )}
     </main>
   )
