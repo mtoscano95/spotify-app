@@ -24,33 +24,13 @@ export const logout = () => {
       window.localStorage.removeItem(LOCALSTORAGE_KEYS[property]);
     }
     // Navigate to login page
-    window.location = "http:/localhost:3000/login"
-  };
-
-
-
-  // Checks if the amount of time that has elapsed between the timestamp in localStorage
-
-
-  const hasTokenExpired = () => {
-    const { accessToken, timestamp, expireTime } = LOCALSTORAGE_VALUES;
-
-    if (!accessToken || !timestamp) {
-      return false;
-    }
-    // and now is greater than the expiration time of 3600 seconds (1 hour).
-
-    const millisecondsElapsed = Date.now() - Number(timestamp);
-
-    // returns boolean Whether or not the access token in localStorage has expired
-
-    return (millisecondsElapsed / 1000) > Number(expireTime);
+    window.location = window.location.origin;
   };
 
 
   // Use the refresh token in localStorage to hit the /refresh_token endpoint in our Node app, then update values in localStorage with data from response.
 
-const refreshToken = async () => {
+  const refreshToken = async () => {
     try {
       // Logout if there's no refresh token stored or we've managed to get into a reload infinite loop
       if (!LOCALSTORAGE_VALUES.refreshToken ||
@@ -74,6 +54,25 @@ const refreshToken = async () => {
     } catch (e) {
       console.error(e);
     }
+  };
+
+
+  // Checks if the amount of time that has elapsed between the timestamp in localStorage
+
+
+  const hasTokenExpired = () => {
+    const { accessToken, timestamp, expireTime } = LOCALSTORAGE_VALUES;
+
+    if (!accessToken || !timestamp) {
+      return false;
+    }
+    // and now is greater than the expiration time of 3600 seconds (1 hour).
+
+    const millisecondsElapsed = Date.now() - Number(timestamp);
+
+    // returns boolean Whether or not the access token in localStorage has expired
+
+    return (millisecondsElapsed / 1000) > Number(expireTime);
   };
 
 
@@ -134,14 +133,14 @@ axios.defaults.headers['Content-Type'] = 'application/json';
 
 export const getCurrentUserProfile = () =>  axios.get('/me');
 
-// We will add get current user playlist function that hits /me /playlsit spotify API endpoint
+// we will add get current user playlist function that hits /me /playlsit spotify API endpoint
 //https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-a-list-of-current-users-playlists
 
 export const getCurrentUserPlaylists = (limit = 20) => {
   return axios.get(`/me/playlists?limit=${limit}`);
 };
 
-// We will add a get top artists function, pass in short term time range (4 weeks)
+// we will add a get top artists function, pass in short term time range (4 weeks)
 //https://developer.spotify.com/documentation/web-api/reference/get-users-top-artists-and-tracks
   export const getTopArtists = (time_range = 'short_term') => {
     return axios.get(`/me/top/artists?time_range=${time_range}`);
@@ -151,7 +150,7 @@ export const getCurrentUserPlaylists = (limit = 20) => {
     return axios.get(`/me/top/tracks?time_range=${time_range}`);
   };
 
-//Get a Playlist
+//get a Playlist
 //https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-playlist
 // playlist_id - The Spotify ID for the playlist.
 
@@ -160,7 +159,7 @@ export const getPlaylistById = playlist_id => {
 }
 
 
-//Get Audio Features for Several Tracks
+//get audio features for tracks
 //https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-several-audio-features
 // {string} ids - A comma-separated list of the Spotify IDs for the tracks
 

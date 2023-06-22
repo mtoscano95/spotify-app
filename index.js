@@ -1,17 +1,18 @@
 require('dotenv').config();
 const express = require('express');
 const querystring = require('querystring');
+const path = require('path');
 const app = express();
 const axios = require('axios');
 const port = 8888;
 
-const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_ID = process.env.CLIENT_ID
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
+const FRONTEND_URI = process.env.FRONTEND_URI;
 
-app.get("/", (req, res) => {
-  res.redirect('/login');
-})
+// priority serve any static files.
+app.use(express.static(path.resolve(__dirname, './client/build')));
 
 const generateRandomString = length => {
     let text = '';
@@ -73,7 +74,7 @@ const generateRandomString = length => {
           });
 
           //redirect to react app
-          res.redirect(`http://localhost:3000/?${queryParams}`);
+          res.redirect(`${FRONTEND_URI}/?${queryParams}`);
 
           
 
@@ -89,18 +90,30 @@ const generateRandomString = length => {
 
 
   app.get('/refresh_token', (req, res) => {
-    // we will need to pull a refresh token from the url
     const { refresh_token } = req.query;
   
-    // well set up a get route to reequest the refresh token
-    axios.get(`http://localhost:8888/refresh_token?refresh_token=${refresh_token}`)
-    .then(response => {
-      res.send(`<pre>${JSON.stringify(response.data, null, 2)}</pre>`);
+    axios({
+      method: 'post',
+      url: 'https://accounts.spotify.com/api/token',
+      data: querystring.stringify({
+        grant_type: 'refresh_token',
+        refresh_token: refresh_token
+      }),
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${new Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`,
+      },
     })
-    .catch(error => {
-      res.send(error);
-    });
+      .then(response => {
+        res.send(response.data);
+      })
+      .catch(error => {
+        res.send(error);
+      });
+  });
 
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './client/build', 'index.html'));
   });
 
 app.listen(port, () => {

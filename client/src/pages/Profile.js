@@ -4,7 +4,6 @@ import { getCurrentUserProfile, getCurrentUserPlaylists, getTopArtists, getTopTr
 import { StyledHeader } from '../styles';
 import { SectionWrapper, ArtistsGrid, TrackList, PlaylistsGrid, Loader } from '../Components';
 
-
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [playlists, setPlaylists] = useState(null);

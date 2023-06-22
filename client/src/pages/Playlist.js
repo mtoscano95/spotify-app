@@ -15,7 +15,6 @@ const Playlist = () => {
   const [sortValue, setSortValue] = useState('');
   const sortOptions = ['danceability', 'tempo', 'energy'];
 
-
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await getPlaylistById(id);

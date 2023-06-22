@@ -26,7 +26,9 @@ const StyledLogoutButton = styled.button`
     right: var(--spacing-lg);
   }
 `;
-function ScrollToTop() {
+
+// scroll to top of page when changing routes
+const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
